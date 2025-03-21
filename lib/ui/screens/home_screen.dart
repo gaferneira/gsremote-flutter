@@ -1,15 +1,48 @@
+import 'package:dyi_controller/ui/screens/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
-  final String deviceId;
+import 'dashboard/dashboard_screen.dart';
 
-  const HomeScreen({super.key, required this.deviceId});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Home")),
-      body: Center(child: Text("Connected to device: $deviceId")),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          const DashboardScreen(),
+          const SettingsScreen(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
     );
   }
 }

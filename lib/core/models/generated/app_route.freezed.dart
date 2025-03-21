@@ -78,66 +78,32 @@ String toString() {
 
 
 class Home implements AppRoute {
-  const Home(this.id);
+  const Home();
   
 
- final  String id;
 
-/// Create a copy of AppRoute
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$HomeCopyWith<Home> get copyWith => _$HomeCopyWithImpl<Home>(this, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Home&&(identical(other.id, id) || other.id == id));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Home);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'AppRoute.home(id: $id)';
+  return 'AppRoute.home()';
 }
 
 
 }
 
-/// @nodoc
-abstract mixin class $HomeCopyWith<$Res> implements $AppRouteCopyWith<$Res> {
-  factory $HomeCopyWith(Home value, $Res Function(Home) _then) = _$HomeCopyWithImpl;
-@useResult
-$Res call({
- String id
-});
 
 
-
-
-}
-/// @nodoc
-class _$HomeCopyWithImpl<$Res>
-    implements $HomeCopyWith<$Res> {
-  _$HomeCopyWithImpl(this._self, this._then);
-
-  final Home _self;
-  final $Res Function(Home) _then;
-
-/// Create a copy of AppRoute
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? id = null,}) {
-  return _then(Home(
-null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
 
 // dart format on

@@ -1,25 +1,37 @@
-import 'package:dyi_controller/ui/screens/connect_device/connect_device_screen.dart';
-import 'package:dyi_controller/ui/screens/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../dependencies.dart';
+import '/ui/screens/connect_device/connect_device_screen.dart';
+import '/ui/screens/home_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/models/app_route.dart';
 
-final appRouter = GoRouter(
-  initialLocation: ConnectDevice().generatePath(),
+GoRouter appRouter(WidgetRef ref) => GoRouter(
   routes: [
     GoRoute(
       path: ConnectDevice().generatePath(),
       builder: (context, state) => const ConnectDeviceScreen(),
     ),
     GoRoute(
-      path: Home(':deviceId').generatePath(),
+      path: Home().generatePath(),
       builder: (context, state) {
-        final deviceId = state.pathParameters['deviceId']!;
-        return HomeScreen(deviceId: deviceId);
+        return HomeScreen();
       },
     ),
   ],
+  redirect: (context, state) async {
+    var path = state.fullPath;
+    if (path == null || path.isEmpty) {
+      final isDeviceSetup = await ref.read(bluetoothRepositoryProvider).isDeviceSetup();
+      if (isDeviceSetup) {
+        return Home().generatePath();
+      }
+      return ConnectDevice().generatePath();
+    }
+    return null;
+  }
 );
 
 extension AppRouteHelper on AppRoute {
@@ -27,7 +39,7 @@ extension AppRouteHelper on AppRoute {
     var route = this;
     return switch (route) {
       ConnectDevice() => '/connect-device',
-      Home() => '/home/${route.id}',
+      Home() => '/home',
     };
   }
 }
