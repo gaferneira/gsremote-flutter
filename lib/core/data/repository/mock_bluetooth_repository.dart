@@ -8,23 +8,21 @@ class MockBluetoothRepository implements BluetoothRepository {
   final StreamController<List<RemoteControl>> _scanResultsController =
   StreamController<List<RemoteControl>>.broadcast();
 
-  final StreamController<BluetoothConnectionState> _deviceStateController =
-  StreamController<BluetoothConnectionState>.broadcast();
+  final StreamController<bool> _deviceStateController =
+  StreamController<bool>.broadcast();
 
   @override
-  Stream<List<RemoteControl>> get scanResultsStream => _scanResultsController.stream;
+  Future<Stream<List<RemoteControl>>> startScan() async {
+    _addFakeDevice();
+    return _scanResultsController.stream;
+  }
 
-  @override
-  Stream<BluetoothConnectionState> get deviceStatusStream => _deviceStateController.stream;
-
-  @override
-  Future<void> startScan() async {
-
+  void _addFakeDevice() async {
     await Future.delayed(Duration(seconds: 2));
 
     final fakeDevices = [
-          RemoteControl(id: "1234", name: "GS remote 999999"),
-          RemoteControl(id: "1234", name: "GS remote 1212122"),
+      RemoteControl(id: "1234", name: "GS remote 999999"),
+      RemoteControl(id: "1234", name: "GS remote 1212122"),
     ];
 
     _scanResultsController.add(fakeDevices);
@@ -43,9 +41,22 @@ class MockBluetoothRepository implements BluetoothRepository {
   @override
   Future<bool> pairDevice(RemoteControl device) async {
     await Future.delayed(const Duration(seconds: 2));
-    _deviceStateController.add(
-      BluetoothConnectionState.connected
-    );
+    _deviceStateController.add(true);
+    return true;
+  }
+
+  @override
+  Future<Stream<bool>> getDeviceStateConnection() async{
+    return _deviceStateController.stream;
+  }
+
+  @override
+  Future<void> disconnectDevice() async {
+
+  }
+
+  @override
+  Future<bool> isDeviceSetup() async {
     return true;
   }
 

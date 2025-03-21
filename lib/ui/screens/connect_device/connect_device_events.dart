@@ -1,4 +1,4 @@
-import 'package:dyi_controller/core/models/remote_control.dart';
+import '/core/models/remote_control.dart';
 
 sealed class ConnectDeviceEvent {
   const ConnectDeviceEvent();

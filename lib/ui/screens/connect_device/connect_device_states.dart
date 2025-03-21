@@ -1,4 +1,6 @@
-import 'package:dyi_controller/core/models/remote_control.dart';
+import 'package:dyi_controller/core/utils/result.dart';
+
+import '/core/models/remote_control.dart';
 
 sealed class ConnectDeviceState {
   const ConnectDeviceState();
@@ -7,7 +9,7 @@ sealed class ConnectDeviceState {
   const factory ConnectDeviceState.scanning() = Scanning;
   const factory ConnectDeviceState.deviceSelection(List<RemoteControl> devices) = DeviceSelection;
   const factory ConnectDeviceState.connecting(RemoteControl device) = Connecting;
-  const factory ConnectDeviceState.connected(RemoteControl device) = Connected;
+  const factory ConnectDeviceState.connected(Result<RemoteControl> result) = Connected;
 }
 
 class Idle extends ConnectDeviceState {
@@ -31,7 +33,7 @@ class Connecting extends ConnectDeviceState {
 }
 
 class Connected extends ConnectDeviceState {
-  final RemoteControl device;
+  final Result<RemoteControl> result;
 
-  const Connected(this.device);
+  const Connected(this.result);
 }

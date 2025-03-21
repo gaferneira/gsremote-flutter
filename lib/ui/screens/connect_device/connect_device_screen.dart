@@ -1,5 +1,7 @@
-import 'package:dyi_controller/core/models/app_route.dart';
-import 'package:dyi_controller/core/models/remote_control.dart';
+import '../../../core/utils/failure.dart';
+import '/core/utils/result.dart';
+import '/core/models/app_route.dart';
+import '/core/models/remote_control.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app_router.dart';
@@ -63,7 +65,10 @@ class ConnectDeviceScreen extends ConsumerWidget {
       case Connecting():
         return _buildConnectingState(viewModel, state.device);
       case Connected():
-        return _buildConnectedState(context, viewModel, state.device);
+        return state.result.when(
+              (device) => _buildConnectedState(context, viewModel, device),
+              (failure) => _buildErrorConnectedState(context, viewModel, failure),
+        );
     }
   }
 
@@ -225,9 +230,29 @@ class ConnectDeviceScreen extends ConsumerWidget {
         const SizedBox(height: 40),
         ElevatedButton(
           onPressed: () {
-            context.go(AppRoute.home(device.id));
+            context.go(AppRoute.home());
           },
           child: Text("Continue"),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorConnectedState(
+      BuildContext context,
+      ConnectDeviceViewModel viewModel,
+      Failure failure,
+      ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Error connecting: ${failure.toText()}"),
+        const SizedBox(height: 40),
+        ElevatedButton(
+          onPressed: () {
+             viewModel.event(StartScanning());
+          },
+          child: Text("Retry"),
         ),
       ],
     );
