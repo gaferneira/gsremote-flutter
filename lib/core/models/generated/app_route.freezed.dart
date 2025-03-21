@@ -106,4 +106,36 @@ String toString() {
 
 
 
+/// @nodoc
+
+
+class BoardSettings implements AppRoute {
+  const BoardSettings();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardSettings);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'AppRoute.boardSettings()';
+}
+
+
+}
+
+
+
+
 // dart format on

@@ -1,4 +1,4 @@
-import 'package:dyi_controller/ui/screens/settings/settings_screen.dart';
+import '/ui/screens/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'dashboard/dashboard_screen.dart';
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _selectedIndex,
         children: [
           const DashboardScreen(),
-          const SettingsScreen(),
+          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

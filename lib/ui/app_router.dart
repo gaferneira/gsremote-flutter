@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../dependencies.dart';
 import '/ui/screens/connect_device/connect_device_screen.dart';
 import '/ui/screens/home_screen.dart';
+import '/ui/screens/settings/board_settings_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,6 +19,12 @@ GoRouter appRouter(WidgetRef ref) => GoRouter(
       path: Home().generatePath(),
       builder: (context, state) {
         return HomeScreen();
+      },
+    ),
+    GoRoute(
+      path: BoardSettings().generatePath(),
+      builder: (context, state) {
+        return BoardSettingsScreen();
       },
     ),
   ],
@@ -40,6 +47,7 @@ extension AppRouteHelper on AppRoute {
     return switch (route) {
       ConnectDevice() => '/connect-device',
       Home() => '/home',
+      BoardSettings() => '/board-settings',
     };
   }
 }
@@ -47,4 +55,7 @@ extension AppRouteHelper on AppRoute {
 extension AppRouterHelper on BuildContext {
   void go(AppRoute route, {Object? extra}) =>
       GoRouter.of(this).go(route.generatePath(), extra: extra);
+
+  void push(AppRoute route, {Object? extra}) =>
+      GoRouter.of(this).push(route.generatePath(), extra: extra);
 }
