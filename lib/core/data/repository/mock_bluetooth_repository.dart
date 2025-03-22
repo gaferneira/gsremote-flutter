@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../models/remote_control.dart';
 import 'bluetooth_repository.dart';
 
@@ -47,9 +46,15 @@ class MockBluetoothRepository implements BluetoothRepository {
 
   @override
   Future<Stream<bool>> getDeviceStateConnection() async{
+    _connectDevice();
     return _deviceStateController.stream;
   }
 
+  void _connectDevice() async {
+    await Future.delayed(Duration(seconds: 2));
+
+    _deviceStateController.add(true);
+  }
   @override
   Future<void> disconnectDevice() async {
 
@@ -57,7 +62,7 @@ class MockBluetoothRepository implements BluetoothRepository {
 
   @override
   Future<bool> isDeviceSetup() async {
-    return true;
+    return false;
   }
 
 }
