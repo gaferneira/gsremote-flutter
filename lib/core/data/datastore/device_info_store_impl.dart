@@ -1,7 +1,7 @@
 
 
-import 'package:dyi_controller/core/data/datastore/device_info_store.dart';
-import 'package:dyi_controller/core/storage/storage_service.dart';
+import '/core/data/datastore/device_info_store.dart';
+import '/core/storage/storage_service.dart';
 
 class DeviceInfoStoreImpl implements DeviceInfoStore {
 

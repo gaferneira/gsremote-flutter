@@ -1,4 +1,4 @@
-import 'package:dyi_controller/core/utils/result.dart';
+import '/core/utils/result.dart';
 
 import '/core/models/remote_control.dart';
 

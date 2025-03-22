@@ -1,5 +1,5 @@
-import 'package:dyi_controller/core/data/datastore/device_info_store.dart';
-import 'package:dyi_controller/core/data/datastore/device_info_store_impl.dart';
+import '/core/data/datastore/device_info_store.dart';
+import '/core/data/datastore/device_info_store_impl.dart';
 
 import '/core/data/repository/bluetooth_repository_impl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

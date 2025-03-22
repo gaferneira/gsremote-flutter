@@ -1,4 +1,4 @@
-package com.example.dyi_controller
+package com.magneto.gs_remote
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,4 +1,4 @@
-# dyi_controller
+# gs_remote
 
 A new Flutter project.
 
