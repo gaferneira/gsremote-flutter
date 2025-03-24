@@ -7,7 +7,7 @@ import 'core/data/repository/bluetooth_repository.dart';
 import 'core/data/repository/mock_bluetooth_repository.dart';
 import 'core/storage/storage_service.dart';
 
-const useMock = true;
+const useMock = false;
 
 final storageServiceProvider = Provider<StorageService>((ref) {
   return StorageService();

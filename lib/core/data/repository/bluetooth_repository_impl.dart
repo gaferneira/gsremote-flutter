@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 
 import '../datastore/device_info_store.dart';
 import '/core/models/remote_control.dart';
@@ -24,7 +26,12 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
 
     _scanResultsController = StreamController<List<RemoteControl>>.broadcast();
     // Start scanning for devices
-    await FlutterBluePlus.startScan(timeout: Duration(seconds: 5));
+    await FlutterBluePlus.startScan(
+        withServices: [
+          Guid("ABF0")
+        ],
+        timeout: Duration(seconds: 5)
+    );
 
     // Listen for scan results and update the controller
     FlutterBluePlus.scanResults.listen((scanResults) {
@@ -51,7 +58,7 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
   Future<bool> pairDevice(RemoteControl deviceId) async {
     try {
       var device = BluetoothDevice.fromId(deviceId.id);
-      await device.connect(autoConnect: true);
+      await device.connect(autoConnect: true, mtu: null);
       await device.connectionState.where((val) => val == BluetoothConnectionState.connected).first;
       await deviceInfoStore.saveDeviceId(device.remoteId.toString());
       return true;
@@ -68,8 +75,13 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
     var device = BluetoothDevice.fromId(deviceId);
     device.connectionState.listen((BluetoothConnectionState state) {
       _deviceStateController?.add(state == BluetoothConnectionState.connected);
+      if (state == BluetoothConnectionState.connected) {
+        if (!kIsWeb && Platform.isAndroid) {
+          device.requestMtu(500);
+        }
+      }
     });
-    await device.connect(autoConnect: true);
+    await device.connect(autoConnect: true, mtu: null);
 
     return _deviceStateController!.stream;
   }
@@ -85,5 +97,40 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
   @override
   Future<bool> isDeviceSetup() async {
     return (await deviceInfoStore.getDeviceId()) != null;
+  }
+
+  @override
+  Future<bool> sendCommand(int commandValue) async {
+    try {
+
+      String deviceId = await deviceInfoStore.getDeviceId() ?? "";
+      var device = BluetoothDevice.fromId(deviceId);
+
+      List<int> command = [
+        (commandValue & 0xFF),        // Low byte
+      ];
+
+      List<BluetoothService> services = await device.discoverServices();
+
+      // Iterate through the services and find the characteristic you're interested in
+      for (BluetoothService service in services) {
+
+        //if (service.uuid.toString() == 'abf0') {
+          for (BluetoothCharacteristic characteristic in service
+              .characteristics) {
+            // Check if this is the characteristic you want to write to
+            if (characteristic.properties.write) {
+              // Write the command to the characteristic
+              await characteristic.write(command);
+              print('Command sent to the device: $command');
+              return true;
+            }
+          }
+        //}
+      }
+    } catch (e) {
+      print('Error sending command: $e');
+    }
+    return false;
   }
 }

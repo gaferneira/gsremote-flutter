@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/utils/failure.dart';
 import '/core/models/remote_control.dart';
 import '/core/utils/result.dart';
 import '/core/data/repository/bluetooth_repository.dart';
@@ -46,8 +47,12 @@ class ConnectDeviceViewModel extends StateNotifier<ConnectDeviceState> {
   void _selectDevice(RemoteControl device) async {
     state = ConnectDeviceState.connecting(device);
     try {
-      await _bluetoothRepository.pairDevice(device);
-      state = ConnectDeviceState.connected(Success(device));
+      var response = await _bluetoothRepository.pairDevice(device);
+      if (response) {
+        state = ConnectDeviceState.connected(Success(device));
+      } else {
+        state = ConnectDeviceState.connected(Error(ApplicationException("Error pairing device", null)));
+      }
     } on Exception catch (e) {
       state = ConnectDeviceState.connected(e.toResultError());
     }

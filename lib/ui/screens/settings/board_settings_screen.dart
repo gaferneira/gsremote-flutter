@@ -2,6 +2,8 @@ import '/ui/screens/settings/setting_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'board_settings_viewmodel.dart';
+
 class BoardSettingsScreen extends ConsumerStatefulWidget {
   const BoardSettingsScreen({super.key});
 
@@ -24,6 +26,8 @@ class _BoardSettingsScreenState extends ConsumerState<BoardSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final viewModel = ref.read(boardSettingsViewModelProvider.notifier);
 
     var settings = [
       SettingItem.toggleItem(
@@ -141,9 +145,10 @@ class _BoardSettingsScreenState extends ConsumerState<BoardSettingsScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Handle apply changes action
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Changes Applied")),
-                    );
+                    viewModel.applyChanges();
+                    //ScaffoldMessenger.of(context).showSnackBar(
+                    //  SnackBar(content: Text("Changes Applied")),
+                    //);
                   },
                   child: Text("Apply Changes"),
                 ),

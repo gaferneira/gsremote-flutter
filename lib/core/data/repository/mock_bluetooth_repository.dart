@@ -65,4 +65,9 @@ class MockBluetoothRepository implements BluetoothRepository {
     return false;
   }
 
+  @override
+  Future<bool> sendCommand(int commandValue) async {
+    return true;
+  }
+
 }
