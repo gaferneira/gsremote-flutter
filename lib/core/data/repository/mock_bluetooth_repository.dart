@@ -45,8 +45,10 @@ class MockBluetoothRepository implements BluetoothRepository {
   }
 
   @override
-  Future<Stream<bool>> getDeviceStateConnection() async{
-    _connectDevice();
+  Future<Stream<bool>> getDeviceStateConnection(bool connectToDevice) async{
+    if (connectToDevice) {
+      _connectDevice();
+    }
     return _deviceStateController.stream;
   }
 

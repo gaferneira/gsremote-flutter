@@ -13,7 +13,13 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
 
   DeviceInfoStore deviceInfoStore;
 
-  BluetoothRepositoryImpl(this.deviceInfoStore);
+  BluetoothRepositoryImpl(this.deviceInfoStore) {
+    FlutterBluePlus.setLogLevel(LogLevel.verbose, color:true);
+
+    if (!kIsWeb && Platform.isAndroid) {
+      FlutterBluePlus.turnOn();
+    }
+  }
 
   // StreamController to manage the stream of devices
   StreamController<List<RemoteControl>>? _scanResultsController;
@@ -26,7 +32,7 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
 
     _scanResultsController = StreamController<List<RemoteControl>>.broadcast();
     // Start scanning for devices
-    await FlutterBluePlus.startScan(
+    FlutterBluePlus.startScan(
         withServices: [
           Guid("ABF0")
         ],
@@ -34,11 +40,13 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
     );
 
     // Listen for scan results and update the controller
-    FlutterBluePlus.scanResults.listen((scanResults) {
+    var subscription = FlutterBluePlus.scanResults.listen((scanResults) {
       _scanResultsController?.add(scanResults.map((item) =>
           RemoteControl(id: item.device.remoteId.str, name: item.device.platformName)
       ).toList());
     });
+
+    FlutterBluePlus.cancelWhenScanComplete(subscription);
 
     return _scanResultsController!.stream;
   }
@@ -68,7 +76,7 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
   }
 
   @override
-  Future<Stream<bool>> getDeviceStateConnection() async {
+  Future<Stream<bool>> getDeviceStateConnection(bool connectToDevice) async {
     _deviceStateController = StreamController<bool>.broadcast();
 
     String deviceId = await deviceInfoStore.getDeviceId() ?? "";
@@ -77,11 +85,14 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
       _deviceStateController?.add(state == BluetoothConnectionState.connected);
       if (state == BluetoothConnectionState.connected) {
         if (!kIsWeb && Platform.isAndroid) {
-          device.requestMtu(500);
+          device.requestMtu(517);
         }
       }
     });
-    await device.connect(autoConnect: true, mtu: null);
+
+    if (device.isDisconnected && connectToDevice) {
+      await device.connect(autoConnect: true, mtu: null);
+    }
 
     return _deviceStateController!.stream;
   }
@@ -108,26 +119,22 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
 
       List<int> command = [
         (commandValue & 0xFF),        // Low byte
+        ((commandValue >> 8) & 0xFF), // High byte
       ];
 
       List<BluetoothService> services = await device.discoverServices();
 
       // Iterate through the services and find the characteristic you're interested in
-      for (BluetoothService service in services) {
+      var characteristic = services.where((s) => s.uuid.toString() == 'abf0')
+          .firstOrNull
+          ?.characteristics.where((c) => c.characteristicUuid.str == 'abf1')
+          .firstOrNull;
 
-        //if (service.uuid.toString() == 'abf0') {
-          for (BluetoothCharacteristic characteristic in service
-              .characteristics) {
-            // Check if this is the characteristic you want to write to
-            if (characteristic.properties.write) {
-              // Write the command to the characteristic
-              await characteristic.write(command);
-              print('Command sent to the device: $command');
-              return true;
-            }
-          }
-        //}
+      if (characteristic != null) {
+        characteristic.write(command);
+        return true;
       }
+
     } catch (e) {
       print('Error sending command: $e');
     }
