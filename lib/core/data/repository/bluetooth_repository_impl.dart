@@ -78,9 +78,17 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
   @override
   Future<Stream<bool>> getDeviceStateConnection(bool connectToDevice) async {
     _deviceStateController = StreamController<bool>.broadcast();
+    String? deviceId = await deviceInfoStore.getDeviceId();
+    if (deviceId == null) {
+      return _deviceStateController!.stream;
+    }
+    _getDeviceStateConnection(deviceId, connectToDevice);
+    return _deviceStateController!.stream;
+  }
 
-    String deviceId = await deviceInfoStore.getDeviceId() ?? "";
+  void _getDeviceStateConnection(String deviceId, bool connectToDevice) async {
     var device = BluetoothDevice.fromId(deviceId);
+    _deviceStateController?.add(device.isConnected);
     device.connectionState.listen((BluetoothConnectionState state) {
       _deviceStateController?.add(state == BluetoothConnectionState.connected);
       if (state == BluetoothConnectionState.connected) {
@@ -89,15 +97,12 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
         }
       }
     });
-
     if (device.isDisconnected && connectToDevice) {
       await device.connect(autoConnect: true, mtu: null);
     }
-
-    return _deviceStateController!.stream;
   }
 
-  @override
+    @override
   Future<void> disconnectDevice() async {
     String deviceId = await deviceInfoStore.getDeviceId() ?? "";
     var device = BluetoothDevice.fromId(deviceId);
@@ -111,15 +116,14 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
   }
 
   @override
-  Future<bool> sendCommand(int commandValue) async {
+  Future<bool> sendCommand(String commandValue) async {
     try {
 
       String deviceId = await deviceInfoStore.getDeviceId() ?? "";
       var device = BluetoothDevice.fromId(deviceId);
 
       List<int> command = [
-        (commandValue & 0xFF),        // Low byte
-        ((commandValue >> 8) & 0xFF), // High byte
+
       ];
 
       List<BluetoothService> services = await device.discoverServices();

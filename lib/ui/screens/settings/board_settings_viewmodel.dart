@@ -17,6 +17,6 @@ class BoardSettingsViewModel extends StateNotifier<BoardSettingsState>{
   BoardSettingsViewModel(this._repository) : super(_initial);
 
   Future<bool> applyChanges() async {
-    return _repository.sendCommand(0x500);
+    return _repository.sendCommand("A1A1");
   }
 }

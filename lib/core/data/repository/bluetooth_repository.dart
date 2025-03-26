@@ -10,7 +10,7 @@ abstract interface class BluetoothRepository {
   void dispose();
   Future<bool> pairDevice(RemoteControl device);
   Future<Stream<bool>> getDeviceStateConnection(bool connectToDevice);
-  Future<bool> sendCommand(int commandValue);
+  Future<bool> sendCommand(String hexValue);
   Future<void> disconnectDevice();
 
 }

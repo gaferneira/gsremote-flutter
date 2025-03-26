@@ -20,12 +20,11 @@ class DashboardViewModel extends StateNotifier<DashboardState>{
 
   Future<void> init() async {
     var stream = await _repository.getDeviceStateConnection(true);
+    var initialValue = await stream.first;
+    state = state.copyWith(isDeviceConnected: initialValue);
     stream.listen((event) {
       state = state.copyWith(isDeviceConnected: event);
     });
   }
 
-  Future<Stream<bool>> getDeviceConnectionStream() async {
-      return _repository.getDeviceStateConnection(true);
-  }
 }
