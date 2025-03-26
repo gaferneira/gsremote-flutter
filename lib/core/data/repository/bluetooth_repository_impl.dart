@@ -122,10 +122,6 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
       String deviceId = await deviceInfoStore.getDeviceId() ?? "";
       var device = BluetoothDevice.fromId(deviceId);
 
-      List<int> command = [
-
-      ];
-
       List<BluetoothService> services = await device.discoverServices();
 
       // Iterate through the services and find the characteristic you're interested in
@@ -135,7 +131,7 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
           .firstOrNull;
 
       if (characteristic != null) {
-        characteristic.write(command);
+        characteristic.write(hexToBytes(commandValue), withoutResponse: true);
         return true;
       }
 
@@ -144,4 +140,13 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
     }
     return false;
   }
+
+  List<int> hexToBytes(String hex) {
+    List<int> intList = [
+      for (int i = 0; i < hex.length; i += 2)
+        int.parse(hex.substring(i, i + 2), radix: 16)
+    ];
+    return intList;
+  }
+
 }
