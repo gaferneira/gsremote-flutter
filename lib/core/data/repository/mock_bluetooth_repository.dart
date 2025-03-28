@@ -72,4 +72,9 @@ class MockBluetoothRepository implements BluetoothRepository {
     return true;
   }
 
+  @override
+  Future<void> forgetDevice() async {
+
+  }
+
 }

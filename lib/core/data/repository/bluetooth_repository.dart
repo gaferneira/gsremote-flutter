@@ -12,5 +12,6 @@ abstract interface class BluetoothRepository {
   Future<Stream<bool>> getDeviceStateConnection(bool connectToDevice);
   Future<bool> sendCommand(String hexValue);
   Future<void> disconnectDevice();
+  Future<void> forgetDevice();
 
 }

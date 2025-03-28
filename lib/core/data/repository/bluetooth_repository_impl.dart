@@ -104,10 +104,21 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
 
     @override
   Future<void> disconnectDevice() async {
+    var deviceId = await deviceInfoStore.getDeviceId();
+    if (deviceId != null) {
+      var device = BluetoothDevice.fromId(deviceId);
+      await device.disconnect();
+    }
+  }
+
+  @override
+  Future<void> forgetDevice() async {
     String deviceId = await deviceInfoStore.getDeviceId() ?? "";
     var device = BluetoothDevice.fromId(deviceId);
     await device.disconnect();
     deviceInfoStore.removeDeviceId();
+    _deviceStateController?.close();
+    _deviceStateController = null;
   }
 
   @override
@@ -148,5 +159,4 @@ class BluetoothRepositoryImpl implements BluetoothRepository {
     ];
     return intList;
   }
-
 }

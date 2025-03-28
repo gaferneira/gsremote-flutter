@@ -107,7 +107,6 @@ class BluetoothUniversalRepositoryImpl implements BluetoothRepository {
     String? deviceId = await deviceInfoStore.getDeviceId();
     if (deviceId != null) {
       await UniversalBle.disconnect(deviceId);
-      deviceInfoStore.removeDeviceId();
     }
   }
 
@@ -145,6 +144,15 @@ class BluetoothUniversalRepositoryImpl implements BluetoothRepository {
       bytes.add(int.parse(hex.substring(i, i + 2), radix: 16));
     }
     return Uint8List.fromList(bytes);
+  }
+
+  @override
+  Future<void> forgetDevice() async {
+    String deviceId = await deviceInfoStore.getDeviceId() ?? "";
+    await UniversalBle.disconnect(deviceId);
+    deviceInfoStore.removeDeviceId();
+    _deviceStateController?.close();
+    _deviceStateController = null;
   }
 
 }
